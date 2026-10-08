@@ -3,8 +3,6 @@
 import { useState, type FormEvent } from 'react';
 import { site } from '@/data/site';
 
-const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
-
 const field =
   'mt-2 w-full border-b border-cream/20 bg-transparent py-4 text-cream transition-colors focus:border-flame focus:outline-none';
 const label = 'micro text-cream/40 transition-colors group-focus-within:text-flame';
@@ -38,69 +36,59 @@ function formatEnquiry(data: Record<string, FormDataEntryValue>) {
 }
 
 /**
- * Posts straight to Web3Forms — no backend, which is what keeps the site
- * deployable as static files.
+ * The enquiry form hands its answers to the visitor's own mail app, addressed
+ * to Jenks with everything filled in.
  *
- * Without an access key it still works: the same answers are handed to the
- * visitor's mail app, pre-addressed and pre-filled. The form is never a dead
- * end, and it never silently swallows an enquiry.
+ * No form service, no API key, no account to set up — which means there is
+ * nothing to configure before this site goes live and nothing that can quietly
+ * stop working later. The value of the form is the questions it asks: a wall's
+ * town, size, indoor or out, and a budget, so a quote does not take eight
+ * messages to arrive at.
  */
 export default function EnquiryForm() {
-  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [sent, setSent] = useState(false);
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const subject = `Mural enquiry from ${data.name || 'the website'}`;
 
-    if (!ACCESS_KEY) {
-      window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
-        subject,
-      )}&body=${encodeURIComponent(formatEnquiry(data))}`;
-      setState('sent');
-      return;
-    }
-
-    setState('sending');
-    try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          access_key: ACCESS_KEY,
-          subject,
-          from_name: 'JenksArt website',
-          ...data,
-        }),
-      });
-      const json = await res.json();
-      setState(json.success ? 'sent' : 'error');
-    } catch {
-      setState('error');
-    }
+    window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
+      subject,
+    )}&body=${encodeURIComponent(formatEnquiry(data))}`;
+    setSent(true);
   }
 
-  if (state === 'sent') {
+  if (sent) {
     return (
       <div className="border border-flame/40 bg-flame/5 p-10">
         <p className="display text-3xl">
-          {ACCESS_KEY ? 'Sent.' : 'Nearly there.'} <span className="text-flame">Nice one.</span>
+          Nearly there. <span className="text-flame">Nice one.</span>
         </p>
         <p className="mt-4 text-cream/75">
-          {ACCESS_KEY
-            ? 'Jenks will get back to you.'
-            : 'Your email app should have opened with the details filled in — just press send.'}{' '}
-          If it&rsquo;s urgent, ring {site.phone} — he answers his phone faster than his inbox.
+          Your email app should have opened with the details filled in — just press send. If
+          it&rsquo;s urgent, ring {site.phone}; he answers his phone faster than his inbox.
         </p>
+        <div className="mt-8 flex flex-wrap gap-4">
+          <a
+            href={site.phoneHref}
+            className="micro border border-flame bg-flame px-8 py-4 text-white transition-colors hover:bg-flame-dim"
+          >
+            Call {site.phone}
+          </a>
+          <a
+            href={`mailto:${site.email}`}
+            className="micro border border-cream/30 px-8 py-4 transition-colors hover:border-cream"
+          >
+            {site.email}
+          </a>
+        </div>
       </div>
     );
   }
 
   return (
     <form onSubmit={onSubmit} className="space-y-12">
-      {/* Honeypot — Web3Forms drops anything that fills this in. */}
-      <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} autoComplete="off" />
-
       <div className="group">
         <label className={label} htmlFor="name">
           Your name
@@ -176,18 +164,11 @@ export default function EnquiryForm() {
         <textarea id="message" name="message" rows={4} required className={`${field} resize-none`} />
       </div>
 
-      {state === 'error' && (
-        <p className="text-flame">
-          That didn&rsquo;t send. Please ring {site.phone} or email {site.email} instead.
-        </p>
-      )}
-
       <button
         type="submit"
-        disabled={state === 'sending'}
-        className="micro w-full border border-flame bg-flame px-16 py-6 text-white transition-colors hover:bg-flame-dim disabled:opacity-50"
+        className="micro w-full border border-flame bg-flame px-16 py-6 text-white transition-colors hover:bg-flame-dim"
       >
-        {state === 'sending' ? 'Sending…' : 'Send enquiry'}
+        Send enquiry
       </button>
 
       <p className="text-sm text-cream/40">

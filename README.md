@@ -17,6 +17,7 @@ no CMS and no API; changing a fact means editing one of those three files.
 `promo/` holds a separate HyperFrames project that renders the 30-second
 vertical promo video.
 
-See **[HANDOVER.md](./HANDOVER.md)** for deployment, the one env var worth
-setting, what still needs confirming with Jenks, and the note about the music
-licence on the video.
+No environment variables, no API keys, no backend — it deploys as-is.
+
+See **[HANDOVER.md](./HANDOVER.md)** for deployment, what still needs confirming
+with Jenks, and the note about the music licence on the video.

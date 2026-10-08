@@ -22,20 +22,20 @@ Deploy: push to a repo, import on Vercel, set the project name so it lands on
 
 ---
 
-## One thing to do before sending the link
+## The enquiry form
 
-**Get a Web3Forms access key — about 30 seconds.** Go to
-[web3forms.com](https://web3forms.com), enter `jenksart3@gmail.com`, and they
-email you a key. Put it in `.env.local`:
+**Nothing to configure.** The form hands its answers to the visitor's own mail
+app, addressed to `jenksart3@gmail.com` with every field filled in — no form
+service, no API key, no account, nothing that can quietly stop working later.
 
-```
-NEXT_PUBLIC_WEB3FORMS_KEY=your-key-here
-```
+The value of it is the questions it asks: the wall's town, its rough size,
+indoor or outdoor, and a budget range. That is the difference between a quote
+taking one message and taking eight.
 
-Without it the form still works — it hands the answers to the visitor's mail app
-pre-addressed to Jenks. With it, the enquiry sends silently in the background,
-which converts better. **Send yourself one test enquiry and confirm it arrives
-before handing the site over.**
+If he ever wants enquiries to land in his inbox without the visitor pressing
+send in their own mail app, that is a form service (Web3Forms, Formspree) and
+about ten minutes of work in `components/EnquiryForm.tsx`. It is not needed for
+this to work.
 
 ---
 
