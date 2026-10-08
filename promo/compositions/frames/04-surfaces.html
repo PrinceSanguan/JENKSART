@@ -1,0 +1,601 @@
+<template>
+  <style>
+      /* === hf:canonical-fonts (orchestrator-injected) === */
+      /* Staged by the orchestrator into assets/fonts/ — local files only, so the
+         render performs no network fetch and stays deterministic. font-display:block
+         keeps a fallback face from ever being captured mid-load. */
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/barlow-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 700; font-display: block;
+        src: url("assets/fonts/barlow-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 900; font-display: block;
+        src: url("assets/fonts/barlow-latin-900-normal.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Regular.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Medium.woff2") format("woff2"); }
+/* === /hf:canonical-fonts === */
+
+    /* ────────────────────────────────────────────────────────────────────────
+       04-surfaces — "If it's got a wall"
+       Broadside preset · DARK register (ink-black ground, cream text,
+       fire-orange as the lone accent). 1080×1920 (9:16). 8s. Static hold —
+       no push-in, no parallax float (this frame's direction declines both).
+
+       Type: frame.md's two families -- Barlow (display ramp) and IBM Plex
+       Mono (chrome) -- both ship as local .woff2 in assets/fonts/ and are
+       declared by the orchestrator-injected canonical font block at the top
+       of this file. Named directly below; nothing is fetched at render time.
+       ------------------------------------------------------------------- */
+
+    #root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      /* the container law: every frame-relative unit below is cqw/cqh */
+      container-type: size;
+
+      /* broadside tokens (frame.md) */
+      --hf04-ink: #111111;
+      --hf04-ink-alt: #1a1a18;
+      --hf04-fire: #e85d26;
+      --hf04-cream: #f0ece5;
+      --hf04-cream-muted: #888880;
+      --hf04-cream-hint: #505048;
+      --hf04-border-dark: #282826;
+    }
+
+    /* ── track 0 · the full-bleed ground (never painted on #root) ───────── */
+    .hf04-ground {
+      position: absolute;
+      inset: 0;
+      background-color: var(--hf04-ink);
+    }
+
+    /* ── track 1 · concrete wall field, held at ~55% ─────────────────────── */
+    .hf04-concrete {
+      position: absolute;
+      inset: 0;
+      opacity: 0.55;
+      background-color: var(--hf04-ink-alt);
+      background-image:
+        repeating-linear-gradient(
+          97deg,
+          rgba(240, 236, 229, 0.018) 0 2px,
+          rgba(240, 236, 229, 0) 2px 11px
+        ),
+        repeating-linear-gradient(3deg, rgba(17, 17, 17, 0.45) 0 3px, rgba(17, 17, 17, 0) 3px 17px),
+        radial-gradient(44% 26% at 21% 15%, rgba(240, 236, 229, 0.05), rgba(240, 236, 229, 0) 72%),
+        radial-gradient(38% 28% at 79% 58%, rgba(240, 236, 229, 0.035), rgba(240, 236, 229, 0) 74%),
+        radial-gradient(52% 32% at 50% 96%, rgba(17, 17, 17, 0.6), rgba(17, 17, 17, 0) 72%);
+    }
+
+    /* ── track 2 · ghosted mural stand-in, ~20%, behind the grid ─────────── */
+    .hf04-ghost {
+      position: absolute;
+      left: 0;
+      top: 150px;
+      width: 1080px;
+      height: 1320px;
+      opacity: 0.2;
+    }
+    .hf04-ghost span {
+      position: absolute;
+      display: block;
+    }
+    .hf04-ghost-a {
+      left: 40px;
+      top: 60px;
+      width: 720px;
+      height: 760px;
+      background: var(--hf04-fire);
+      clip-path: polygon(0% 18%, 62% 0%, 100% 34%, 44% 100%, 0% 72%);
+    }
+    .hf04-ghost-b {
+      left: 420px;
+      top: 420px;
+      width: 560px;
+      height: 600px;
+      background: var(--hf04-cream-hint);
+      clip-path: polygon(0% 0%, 100% 12%, 86% 100%, 12% 88%);
+    }
+    .hf04-ghost-c {
+      left: 120px;
+      top: 740px;
+      width: 740px;
+      height: 520px;
+      background: var(--hf04-ink-alt);
+      clip-path: polygon(10% 0%, 100% 22%, 78% 100%, 0% 70%);
+    }
+    .hf04-ghost-d {
+      left: 0;
+      top: 300px;
+      width: 1080px;
+      height: 420px;
+      background: var(--hf04-fire);
+      clip-path: polygon(0% 62%, 100% 8%, 100% 24%, 0% 82%);
+    }
+    .hf04-ghost-e {
+      left: 0;
+      top: 820px;
+      width: 1080px;
+      height: 380px;
+      background: var(--hf04-cream-hint);
+      clip-path: polygon(0% 18%, 100% 68%, 100% 78%, 0% 30%);
+    }
+
+    /* ── track 3 · the stencil-plate grid (2-col brick, last plate spans) ── */
+    .hf04-grid {
+      position: absolute;
+      left: 60px;
+      top: 240px;
+      width: 960px;
+      height: 1128px;
+    }
+    /* the Scene-5 dim is tweened on this inner wrapper, never on the .clip
+       element itself, so nothing competes for the clip layer's own opacity */
+    .hf04-grid-inner {
+      position: absolute;
+      inset: 0;
+    }
+    .hf04-plate {
+      position: absolute;
+      width: 464px;
+      height: 258px;
+      border: 1px solid var(--hf04-cream);
+      border-radius: 0;
+      opacity: 0;
+    }
+    .hf04-plate-num {
+      position: absolute;
+      left: 26px;
+      top: 24px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 1.6cqw;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      /* cream, not cream-muted: a 1.6cqw chrome numeral is small text, so it
+         must clear WCAG AA against the ink/concrete/ghosted-mural stack.
+         Hierarchy against the 3cqw label comes from size + position. */
+      color: var(--hf04-cream);
+      opacity: 0;
+    }
+    .hf04-plate-label {
+      position: absolute;
+      left: 26px;
+      bottom: 24px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 3cqw;
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--hf04-cream);
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    .hf04-p1 {
+      left: 0;
+      top: 0;
+    }
+    .hf04-p2 {
+      left: 496px;
+      top: 0;
+    }
+    .hf04-p3 {
+      left: 0;
+      top: 290px;
+      border-color: var(--hf04-fire);
+    }
+    .hf04-p4 {
+      left: 496px;
+      top: 290px;
+      border-color: var(--hf04-fire);
+    }
+    .hf04-p5 {
+      left: 0;
+      top: 580px;
+      border-color: var(--hf04-fire);
+    }
+    .hf04-p6 {
+      left: 496px;
+      top: 580px;
+      border-color: var(--hf04-fire);
+    }
+    /* the odd one out — spans both columns and flips register to ink-on-fire */
+    .hf04-p7 {
+      left: 0;
+      top: 870px;
+      width: 960px;
+      border-color: var(--hf04-fire);
+      background-color: rgba(232, 93, 38, 0);
+    }
+    .hf04-p7 .hf04-plate-label {
+      font-size: 3.4cqw;
+      color: var(--hf04-cream);
+    }
+
+    /* ── track 4 · the payoff slab (ink band + display line + rule stub) ─── */
+    .hf04-payoff {
+      position: absolute;
+      left: 0;
+      top: 516px;
+      width: 1080px;
+      height: 576px;
+    }
+    .hf04-band {
+      position: absolute;
+      inset: 0;
+      background-color: var(--hf04-ink);
+      border-top: 1px solid var(--hf04-border-dark);
+      border-bottom: 1px solid var(--hf04-border-dark);
+      opacity: 0;
+    }
+    .hf04-lines {
+      position: absolute;
+      left: 60px;
+      top: 131px;
+      width: 960px;
+    }
+    .hf04-line {
+      font-family: Barlow, system-ui, sans-serif;
+      /* 11cqw = 118.8px. Barlow 900 at -0.04em keeps the longest line
+         ("he'll paint it") near 665px -- inside pad-x and under the 78cqw
+         fit-to-measure cap. */
+      font-size: 11cqw;
+      font-weight: 900;
+      line-height: 0.88;
+      letter-spacing: -0.04em;
+      text-transform: lowercase;
+      white-space: nowrap;
+      color: var(--hf04-cream);
+      opacity: 0;
+    }
+    .hf04-line-c {
+      color: var(--hf04-fire);
+    }
+    .hf04-stub {
+      position: absolute;
+      left: 60px;
+      top: 475px;
+      width: 36px;
+      height: 2px;
+      background-color: var(--hf04-fire);
+      opacity: 0;
+    }
+
+    /* ── track 5 · grain field (installed grain-overlay component) ────────
+       Component source: compositions/components/grain-overlay.html. The
+       component's infinite CSS keyframe jitter is replaced by a timeline-
+       driven stepped jitter below — the renderer seeks frame-by-frame, so a
+       wall-clock CSS animation would not be deterministic. Opacity dialled
+       0.15 → 0.10 (the component documents opacity as a customization) so
+       the display line stays crisp under it. */
+    #hf04-grain-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .hf04-grain-texture {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.1;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="04-surfaces"
+    data-start="0"
+    data-duration="7.55"
+    data-width="1080"
+    data-height="1920"
+  >
+    <div class="hf04-ground clip" data-start="0" data-duration="7.55" data-track-index="0"></div>
+
+    <div
+      class="hf04-concrete clip"
+      data-start="0"
+      data-duration="7.55"
+      data-track-index="1"
+      data-layout-ignore
+    ></div>
+
+    <!--
+      ══════════════════════════════════════════════════════════════════════
+      MURAL PHOTO SLOT — assets/murals/mural-04.jpg
+      (the commercial-wall shot: shopfront, cafe, gym or school)
+
+      The file is INTENTIONALLY ABSENT from disk on this run, so this frame
+      renders the designed ghosted stand-in below instead (an abstract mural
+      field in the pack's palette, held at ~20% behind the plate grid).
+
+      When the real photograph is dropped into assets/murals/, delete the
+      .hf04-ghost stand-in element below and paste exactly this in its place:
+
+      <img
+        class="clip"
+        src="assets/murals/mural-04.jpg"
+        alt=""
+        data-start="0"
+        data-duration="7.55"
+        data-track-index="2"
+        data-layout-ignore
+        style="
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 1080px;
+          height: 1920px;
+          object-fit: cover;
+          opacity: 0.2;
+        "
+      />
+      ══════════════════════════════════════════════════════════════════════
+    -->
+    <img
+      class="clip"
+      src="assets/murals/mural-04.jpg"
+      alt=""
+      data-start="0"
+      data-duration="7.55"
+      data-track-index="2"
+      data-layout-ignore
+      style="
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+        opacity: 0.2;
+      "
+    />
+
+    <div class="hf04-grid clip" data-start="0" data-duration="7.55" data-track-index="3">
+      <div class="hf04-grid-inner">
+        <div class="hf04-plate hf04-p1" data-fx="30" data-fy="52">
+          <div class="hf04-plate-num">01</div>
+          <div class="hf04-plate-label">GABLE ENDS</div>
+        </div>
+        <div class="hf04-plate hf04-p2" data-fx="-30" data-fy="52">
+          <div class="hf04-plate-num">02</div>
+          <div class="hf04-plate-label">SHOPFRONTS</div>
+        </div>
+        <div class="hf04-plate hf04-p3" data-fx="30" data-fy="17">
+          <div class="hf04-plate-num">03</div>
+          <div class="hf04-plate-label">CAF&Eacute;S</div>
+        </div>
+        <div class="hf04-plate hf04-p4" data-fx="-30" data-fy="17">
+          <div class="hf04-plate-num">04</div>
+          <div class="hf04-plate-label">GYMS</div>
+        </div>
+        <div class="hf04-plate hf04-p5" data-fx="30" data-fy="-17">
+          <div class="hf04-plate-num">05</div>
+          <div class="hf04-plate-label">BARBERS</div>
+        </div>
+        <div class="hf04-plate hf04-p6" data-fx="-30" data-fy="-17">
+          <div class="hf04-plate-num">06</div>
+          <div class="hf04-plate-label">SCHOOLS</div>
+        </div>
+        <div class="hf04-plate hf04-p7" data-fx="0" data-fy="-52">
+          <div class="hf04-plate-num">07</div>
+          <div class="hf04-plate-label">KIDS&#39; BEDROOMS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hf04-payoff clip" data-start="0" data-duration="7.55" data-track-index="4">
+      <div class="hf04-band"></div>
+      <div class="hf04-lines">
+        <div class="hf04-line hf04-line-a">if it&#39;s got</div>
+        <div class="hf04-line hf04-line-b">a wall</div>
+        <div class="hf04-line hf04-line-c">he&#39;ll paint it</div>
+      </div>
+      <div class="hf04-stub"></div>
+    </div>
+
+    <div
+      id="hf04-grain-overlay"
+      class="clip"
+      data-start="0"
+      data-duration="7.55"
+      data-track-index="5"
+      data-layout-ignore
+    >
+      <div class="hf04-grain-texture"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var FIRE = "#e85d26";
+      var CREAM = "#f0ece5";
+      var HINT = "#505048";
+
+      var plates = document.querySelectorAll(".hf04-grid .hf04-plate");
+
+      /* ──────────────────────────────────────────────────────────────────
+         Scene 1 (0.0–1.0s)  dark field · concrete ~55% · mural ghosted ~20%
+                             "Gable ends" → plate 01 arrives upper-left
+         Scene 2 (1.0–1.9s)  "Shopfronts" → plate 02 lands to its right
+         Scene 3 (1.9–4.2s)  CAFÉS / GYMS / BARBERS / SCHOOLS cascade, one
+                             per spoken word, border flashing fire-orange
+                             then settling to cream-hint
+         Scene 4 (4.2–5.3s)  "Kids' bedrooms" → plate 07 spans both columns
+                             and flips register to ink-on-fire
+         Scene 5 (5.3–8.0s)  grid dims · ink slab lands · "if it's got a
+                             wall" (cream) then "he'll paint it" (fire)
+         ────────────────────────────────────────────────────────────────── */
+
+      // arrival schedule: [index, at, flashColour, settleAt]
+      // Each arrival is the center-outward-expansion rule in its short-path /
+      // "starting partially-spread" form: the plate slides a short distance
+      // OUTWARD from the grid centre directly into its own slot (data-fx/fy
+      // = 12% of the slot→centre vector), fade + faint scale, out-ease only,
+      // low drama — no burst, no bounce.
+      var ARRIVALS = [
+        [0, 0.08, CREAM, 0.85],
+        [1, 1.05, CREAM, 1.72],
+        [2, 1.96, FIRE, 2.42],
+        [3, 2.5, FIRE, 2.96],
+        [4, 3.06, FIRE, 3.52],
+        [5, 3.62, FIRE, 4.08],
+        [6, 4.3, FIRE, -1],
+      ];
+
+      ARRIVALS.forEach(function (a) {
+        var plate = plates[a[0]];
+        var at = a[1];
+        var num = plate.querySelector(".hf04-plate-num");
+        var label = plate.querySelector(".hf04-plate-label");
+
+        tl.set(plate, { borderColor: a[2] }, at);
+        tl.fromTo(
+          plate,
+          { x: Number(plate.dataset.fx), y: Number(plate.dataset.fy), scale: 0.965, opacity: 0 },
+          { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.46, ease: "power3.out" },
+          at,
+        );
+        // tight internal stagger — the plate frame lands, then its chrome
+        tl.fromTo(
+          label,
+          { y: 14, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.38, ease: "power3.out" },
+          at + 0.09,
+        );
+        tl.fromTo(
+          num,
+          { y: 10, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.34, ease: "power3.out" },
+          at + 0.15,
+        );
+        // the accent marks only the NEWEST arrival — older plates recede
+        if (a[3] > 0) {
+          tl.to(plate, { borderColor: HINT, duration: 0.4, ease: "power1.out" }, a[3]);
+        }
+      });
+
+      // ── Scene 4 — plate 07 flips register: a HARD flat two-register flip
+      // (fire-orange ground, ink reading on top). Instant, never tweened: a
+      // tweened fill would pass through cream-on-orange / ink-on-dark, and
+      // both are illegal in this system.
+      var p7 = plates[6];
+      var p7label = p7.querySelector(".hf04-plate-label");
+      var p7num = p7.querySelector(".hf04-plate-num");
+
+      tl.set(p7, { backgroundColor: "rgba(232,93,38,0)", borderColor: FIRE }, 0);
+      tl.set(p7label, { color: CREAM }, 0);
+      tl.set(p7num, { color: CREAM }, 0);
+
+      tl.set(
+        p7,
+        { backgroundColor: "rgba(232,93,38,1)", borderColor: "rgba(17,17,17,0.20)" },
+        4.48,
+      );
+      tl.set(p7label, { color: "#111111" }, 4.48);
+      tl.set(p7num, { color: "#111111" }, 4.48);
+
+      // ── Scene 5 — the grid dims beneath the payoff; static hold, no push-in
+      var outlined = [plates[0], plates[1], plates[2], plates[3], plates[4], plates[5]];
+      tl.to(outlined, { borderColor: HINT, duration: 0.5, ease: "power1.out" }, 5.32);
+      tl.to(".hf04-grid-inner", { opacity: 0.38, duration: 0.55, ease: "power2.out" }, 5.32);
+      tl.to(p7, { opacity: 0.5, duration: 0.55, ease: "power2.out" }, 5.32);
+
+      // rows 2–3 sit directly beneath the opaque payoff slab, so their chrome
+      // recedes fully as it lands — same dim beat, nothing readable is lost.
+      tl.to(
+        ".hf04-p3 .hf04-plate-num, .hf04-p3 .hf04-plate-label, .hf04-p4 .hf04-plate-num, .hf04-p4 .hf04-plate-label, .hf04-p5 .hf04-plate-num, .hf04-p5 .hf04-plate-label, .hf04-p6 .hf04-plate-num, .hf04-p6 .hf04-plate-label",
+        { opacity: 0, duration: 0.3, ease: "power1.out" },
+        5.3,
+      );
+
+      tl.fromTo(
+        ".hf04-band",
+        { opacity: 0 },
+        { opacity: 0.94, duration: 0.45, ease: "power2.out" },
+        5.38,
+      );
+
+      // payoff part A — "if it's got a wall", cream, on its own beat
+      tl.fromTo(
+        ".hf04-line-a",
+        { y: 34, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        5.48,
+      );
+      tl.fromTo(
+        ".hf04-line-b",
+        { y: 34, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        5.56,
+      );
+
+      // payoff part B — "he'll paint it", fire-orange, landing on a later beat
+      tl.fromTo(
+        ".hf04-line-c",
+        { y: 34, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        6.3,
+      );
+
+      // last quiet beat — the system's only ornament, the 36×2 rule stub
+      tl.fromTo(
+        ".hf04-stub",
+        { scaleX: 0, opacity: 1, transformOrigin: "0% 50%" },
+        { scaleX: 1, opacity: 1, duration: 0.45, ease: "power3.out" },
+        7.05,
+      );
+
+      // ── grain field — deterministic stepped jitter on the one timeline
+      var GRAIN_STEPS = [
+        [0, 0],
+        [-5, -5],
+        [-10, 5],
+        [5, -10],
+        [-5, 15],
+        [-10, 5],
+        [15, 0],
+        [0, 10],
+        [-15, 0],
+        [10, 5],
+      ];
+      var grainTex = document.querySelector(".hf04-grain-texture");
+      var grain = { p: 0 };
+      tl.to(
+        grain,
+        {
+          p: 1,
+          duration: 8,
+          ease: "none",
+          onUpdate: function () {
+            var step = GRAIN_STEPS[Math.floor(grain.p * 160) % GRAIN_STEPS.length];
+            gsap.set(grainTex, { xPercent: step[0], yPercent: step[1] });
+          },
+        },
+        0,
+      );
+
+      // full-span anchor so the sub-composition timeline covers the whole shot
+      tl.to({}, { duration: 7.55 }, 0);
+
+      window.__timelines["04-surfaces"] = tl;
+      tl.seek(0);
+    })();
+  </script>
+</template>

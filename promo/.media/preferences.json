@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "facebook-reels",
+      "confirmed_in": [
+        "JENKSART-PROMO"
+      ],
+      "updated_at": "2026-10-08T09:47:15.334Z"
+    },
+    "aspect": {
+      "value": "1080x1920",
+      "confirmed_in": [
+        "JENKSART-PROMO"
+      ],
+      "updated_at": "2026-10-08T09:47:15.424Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "JENKSART-PROMO"
+      ],
+      "updated_at": "2026-10-08T09:47:15.532Z"
+    },
+    "storyboard": {
+      "value": "no",
+      "confirmed_in": [
+        "JENKSART-PROMO"
+      ],
+      "updated_at": "2026-10-08T09:47:15.640Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "broadside",
+      "confirmed_in": [
+        "JENKSART-PROMO"
+      ],
+      "updated_at": "2026-10-08T09:48:30.805Z"
+    }
+  },
+  "sightings": {}
+}

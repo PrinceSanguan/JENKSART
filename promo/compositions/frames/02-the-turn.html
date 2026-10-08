@@ -1,0 +1,846 @@
+<template>
+  <div
+    id="root"
+    data-composition-id="02-the-turn"
+    data-duration="8.40"
+    data-width="1080"
+    data-height="1920"
+  >
+    <!--
+      02-the-turn — "Until someone picks up a can."
+      The before/after payoff. Broadside DARK register (ink-black ground, cream
+      text, fire-orange as the only colour). 1080x1920. Captions disabled, but
+      the caption keep-out still applies: nothing load-bearing below y = 1594px.
+
+      TYPE NOTE — frame.md calls for Barlow (display, lowercase 900, negative
+      tracked) + IBM Plex Mono (chrome). Both faces are now staged as real files
+      in assets/fonts/ and declared in the orchestrator-injected @font-face block
+      at the top of <style> below, so this frame typesets in Barlow with no
+      network fetch at render time.
+    -->
+    <style>
+      /* === hf:canonical-fonts (orchestrator-injected) === */
+      /* Staged by the orchestrator into assets/fonts/ — local files only, so the
+         render performs no network fetch and stays deterministic. font-display:block
+         keeps a fallback face from ever being captured mid-load. */
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/barlow-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 700; font-display: block;
+        src: url("assets/fonts/barlow-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 900; font-display: block;
+        src: url("assets/fonts/barlow-latin-900-normal.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Regular.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Medium.woff2") format("woff2"); }
+/* === /hf:canonical-fonts === */
+
+      
+
+      #root {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        container-type: size;
+        isolation: isolate;
+        /* No background here on purpose: the full-bleed concrete ground rides on
+           the class="clip" wall layer below, never on the frame root. */
+
+        --ink-black: #111111;
+        --ink-black-alt: #1a1a18;
+        --fire-orange: #e85d26;
+        --cream: #f0ece5;
+        --cream-hint: #505048;
+        --border-dark: #282826;
+        /* Generic by design — see TYPE NOTE above. */
+        --turn-display: "Barlow", sans-serif;
+      }
+
+      #root *,
+      #root *::before,
+      #root *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ---------- TRACK 0 — the concrete wall plane (full-bleed ground) ----------
+         Rides on a class="clip" layer, never on #root. Oversized by 200px top and
+         bottom so the Scene 3 slide-down can never expose a frame edge, while the
+         plane itself still enters at x 0 / y 0 / scale 1 / opacity 1 per handoff_in. */
+      .turn-wall-plane {
+        position: absolute;
+        inset: -200px 0;
+        overflow: hidden;
+      }
+
+      .turn-wall-stage {
+        position: absolute;
+        inset: 0;
+        will-change: transform, opacity;
+      }
+
+      .turn-wall {
+        position: absolute;
+        inset: 0;
+        background: var(--ink-black-alt); /* handoff: matches 01-dead-wall's ground exactly */
+        overflow: hidden;
+      }
+
+      .turn-wall-tex {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* Fine aggregate speckle — the concrete grain itself. */
+      .turn-wall-tex-fine {
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 420px 420px;
+        opacity: 0.05;
+        /* feTurbulence emits COLOUR noise; undesaturated it smears
+           rainbow over the wall. Match 01-dead-wall and keep it grey. */
+        filter: grayscale(1);
+      }
+
+      /* Coarse patching / damp mottle — reads as a poured, blotchy wall. */
+      .turn-wall-tex-coarse {
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 1500px 1500px;
+        opacity: 0.03;
+        /* feTurbulence emits COLOUR noise; undesaturated it smears
+           rainbow over the wall. Match 01-dead-wall and keep it grey. */
+        filter: grayscale(1);
+      }
+
+      /* 1px hairline seams — the system's structural ornament, here as block joints. */
+      .turn-seam {
+        position: absolute;
+        background: var(--border-dark);
+      }
+      .turn-seam-h1 {
+        left: 0;
+        right: 0;
+        top: 760px;
+        height: 1px;
+      }
+      .turn-seam-h2 {
+        left: 0;
+        right: 0;
+        top: 1686px;
+        height: 1px;
+      }
+      .turn-seam-v1 {
+        top: 760px;
+        bottom: 234px;
+        left: 712px;
+        width: 1px;
+      }
+
+      /* ---------- the three spray strokes (Scenes 1-2) ---------- */
+      .turn-strokes {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 200px;
+        height: 1920px;
+      }
+
+      .turn-stroke-group path {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .turn-stroke-a {
+        stroke: var(--fire-orange);
+        stroke-width: 54;
+      }
+      .turn-stroke-b {
+        stroke: var(--cream);
+        stroke-width: 36;
+      }
+      .turn-stroke-c {
+        stroke: var(--fire-orange);
+        stroke-width: 46;
+      }
+
+      /* Overspray: the same measured paths, wider and blurred, drawing WITH the
+         stroke so colour blooms along its edge as it lands. */
+      .turn-overspray {
+        filter: blur(17px);
+      }
+      .turn-overspray path {
+        fill: none;
+        stroke-linecap: round;
+      }
+      .turn-os-a {
+        stroke: var(--fire-orange);
+        stroke-width: 132;
+      }
+      .turn-os-b {
+        stroke: var(--cream);
+        stroke-width: 96;
+      }
+      .turn-os-c {
+        stroke: var(--fire-orange);
+        stroke-width: 116;
+      }
+
+      .turn-spatter circle {
+        stroke: none;
+      }
+
+      /* ---------- TRACK 1 — the mural panel (hero) ----------
+         Upper ~70% of the frame: y 150 -> 1440 (1290px = 67% of 1920), clear of
+         the 1594px caption keep-out. */
+      .turn-mural {
+        position: absolute;
+        left: 70px;
+        top: 150px;
+        width: 940px;
+        height: 1290px;
+      }
+
+      .turn-mural-stage {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        /* The reveal grows out of the stroke cluster: 50% 80% of this panel is
+           frame (540, 1182) — exactly where the three strokes cross. */
+        transform-origin: 50% 80%;
+        will-change: transform, opacity, clip-path;
+      }
+
+      .turn-mural-art {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Ready for the photo swap described in the comment below. */
+      .turn-mural-photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .turn-mural-grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 300px 300px;
+        opacity: 0.13;
+      }
+
+      /* ---------- TRACK 2 — the particle field ---------- */
+      .turn-particles {
+        position: absolute;
+        inset: 0;
+      }
+      .turn-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* ---------- TRACK 3 — the display line (Scene 4) ----------
+         Centred over the mural's lower third; block spans 1096 -> ~1310, well
+         above the 1594px keep-out cutoff. */
+      .turn-display {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1096px;
+      }
+
+      .turn-lockup {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .turn-plate {
+        position: relative;
+        display: inline-block;
+        padding: 2.4cqw 4.4cqw 3cqw;
+      }
+
+      /* The ink scrim, sized to the text by the plate's own shrink-to-fit box. */
+      .turn-plate-bg {
+        position: absolute;
+        inset: 0;
+        background: rgba(17, 17, 17, 0.88);
+        border-top: 1px solid var(--border-dark);
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      .turn-word {
+        position: relative;
+        font-family: var(--turn-display);
+        font-weight: 900;
+        font-size: 12cqw;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+        text-transform: lowercase;
+        color: var(--cream);
+        white-space: nowrap;
+        will-change: transform, opacity, filter;
+      }
+
+      /* frame.md's one ornament: the 36x2 rule stub, scaled for 9:16. */
+      .turn-rule {
+        margin-top: 22px;
+        width: 64px;
+        height: 4px;
+        background: var(--fire-orange);
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      /* ---------- TRACK 4 — grain field ----------
+         Adapted from compositions/components/grain-overlay.html. The shipped
+         snippet animates the texture with an endlessly repeating CSS keyframe
+         loop; that is non-deterministic under frame-by-frame seeking, so the
+         loop is dropped and the field is held static. */
+      .turn-grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .turn-grain-tex {
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.12;
+      }
+    </style>
+
+    <!-- ============ TRACK 0 — concrete wall plane + the paint that lands on it ============ -->
+    <div
+      class="turn-wall-plane clip"
+      data-start="0"
+      data-duration="8.40"
+      data-track-index="0"
+    >
+      <div class="turn-wall-stage">
+        <div class="turn-wall">
+          <div class="turn-wall-tex turn-wall-tex-fine"></div>
+          <div class="turn-wall-tex turn-wall-tex-coarse"></div>
+          <div class="turn-seam turn-seam-h1"></div>
+          <div class="turn-seam turn-seam-h2"></div>
+          <div class="turn-seam turn-seam-v1"></div>
+        </div>
+
+        <svg
+          class="turn-strokes"
+          viewBox="0 0 1080 1920"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <g class="turn-overspray">
+            <path class="turn-os-a" d="M 108 1332 Q 436 1206 982 1058" />
+            <path class="turn-os-b" d="M 248 1002 Q 524 1198 862 1418" />
+            <path class="turn-os-c" d="M 904 982 Q 556 1178 176 1414" />
+          </g>
+
+          <g class="turn-stroke-group">
+            <path class="turn-stroke-a" d="M 108 1332 Q 436 1206 982 1058" />
+            <path class="turn-stroke-b" d="M 248 1002 Q 524 1198 862 1418" />
+            <path class="turn-stroke-c" d="M 904 982 Q 556 1178 176 1414" />
+          </g>
+
+          <!-- Seeded-by-hand spatter: the overspray that flies off a can. -->
+          <g class="turn-spatter turn-spatter-a" fill="#e85d26">
+            <circle cx="186" cy="1286" r="9" />
+            <circle cx="268" cy="1356" r="5" />
+            <circle cx="402" cy="1178" r="7" />
+            <circle cx="556" cy="1226" r="11" />
+            <circle cx="702" cy="1092" r="6" />
+            <circle cx="846" cy="1118" r="9" />
+            <circle cx="948" cy="1016" r="5" />
+          </g>
+          <g class="turn-spatter turn-spatter-b" fill="#f0ece5">
+            <circle cx="296" cy="1040" r="6" />
+            <circle cx="392" cy="1118" r="9" />
+            <circle cx="498" cy="1188" r="5" />
+            <circle cx="640" cy="1278" r="8" />
+            <circle cx="772" cy="1348" r="6" />
+            <circle cx="836" cy="1448" r="9" />
+          </g>
+          <g class="turn-spatter turn-spatter-c" fill="#e85d26">
+            <circle cx="868" cy="1012" r="7" />
+            <circle cx="720" cy="1106" r="5" />
+            <circle cx="586" cy="1162" r="10" />
+            <circle cx="438" cy="1248" r="6" />
+            <circle cx="294" cy="1330" r="8" />
+            <circle cx="198" cy="1438" r="6" />
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!--
+      ============================ MURAL PHOTO SLOT ============================
+      assets/murals/mural-01.jpg is intentionally absent from disk, so the panel
+      below is a DESIGNED colour-burst stand-in (spray strokes, overspray grain,
+      bold flat colour fields in the Broadside palette) and it is the real visual
+      the particle field reveals.
+
+      To drop a real mural photo in later, paste:
+
+        <img
+          class="turn-mural-photo"
+          src="assets/murals/mural-01.jpg"
+          alt=""
+          width="940"
+          height="1290"
+        />
+
+      REPLACE the <svg class="turn-mural-art"> ... </svg> element immediately
+      below with that <img>. Everything else — the particle handover, the
+      clip-path reveal, the grain, the display lockup — needs no change; the
+      mural-internals tweens are guarded and simply no-op when the SVG is gone.
+      =========================================================================
+    -->
+    <!-- ============ TRACK 1 — the mural (hero) ============ -->
+    <div class="turn-mural clip" data-start="0" data-duration="8.40" data-track-index="1">
+      <div class="turn-mural-stage">
+        <img
+          class="turn-mural-photo"
+          src="assets/murals/mural-01.jpg"
+          alt=""
+          width="940"
+          height="1290"
+        />
+        <div class="turn-mural-grain"></div>
+      </div>
+    </div>
+
+    <!-- ============ TRACK 2 — the particle field that performs the handover ============ -->
+    <div class="turn-particles clip" data-start="0" data-duration="8.40" data-track-index="2">
+      <canvas class="turn-canvas" width="1080" height="1920" aria-hidden="true"></canvas>
+    </div>
+
+    <!-- ============ TRACK 3 — the display line ============ -->
+    <div class="turn-display clip" data-start="0" data-duration="8.40" data-track-index="3">
+      <div class="turn-lockup">
+        <div class="turn-plate">
+          <div class="turn-plate-bg"></div>
+          <div class="turn-word">landmark.</div>
+        </div>
+        <div class="turn-rule"></div>
+      </div>
+    </div>
+
+    <!-- ============ TRACK 4 — grain field ============ -->
+    <div class="turn-grain clip" data-start="0" data-duration="8.40" data-track-index="4">
+      <div class="turn-grain-tex"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        var root = document.getElementById("root");
+        var q = function (sel) {
+          return root.querySelector(sel);
+        };
+        var qa = function (sel) {
+          return Array.prototype.slice.call(root.querySelectorAll(sel));
+        };
+
+        var D = 6.55;
+
+        /* ---- Scene windows (seconds) ----
+           S1 0.00-1.40  first fire-orange slash + bass impact bloom
+           S2 1.40-3.60  two crossing strokes, particle field converges
+           S3 3.60-5.60  signature transfer: field settles, mural grows out of the
+                         stroke cluster as the concrete plane yields down and dims
+           S4 5.60-7.50  display line lands over the mural's lower third, holds */
+        var S2 = 1.4;
+        var S3 = 3.6;
+        var S4 = 5.6;
+
+        var wallStage = q(".turn-wall-stage");
+        var muralStage = q(".turn-mural-stage");
+        var muralMid = q(".turn-mural-mid");
+        var muralDrips = q(".turn-mural-drips");
+        var plateBg = q(".turn-plate-bg");
+        var word = q(".turn-word");
+        var ruleStub = q(".turn-rule");
+        var canvas = q(".turn-canvas");
+
+        /* ---------- svg-path-draw: measure every path, never guess a length ---------- */
+        function arm(el) {
+          if (!el) return 0;
+          var len = el.getTotalLength() * 1.02;
+          el.style.strokeDasharray = String(len);
+          el.style.strokeDashoffset = String(len);
+          return len;
+        }
+
+        var strokeA = q(".turn-stroke-a");
+        var strokeB = q(".turn-stroke-b");
+        var strokeC = q(".turn-stroke-c");
+        var osA = q(".turn-os-a");
+        var osB = q(".turn-os-b");
+        var osC = q(".turn-os-c");
+        var mStroke1 = q(".turn-mstroke-1");
+        var mStroke2 = q(".turn-mstroke-2");
+
+        var lenA = arm(strokeA);
+        var lenB = arm(strokeB);
+        var lenC = arm(strokeC);
+        var lenOsA = arm(osA);
+        var lenOsB = arm(osB);
+        var lenOsC = arm(osC);
+        var lenM1 = arm(mStroke1);
+        var lenM2 = arm(mStroke2);
+
+        var spatA = qa(".turn-spatter-a circle");
+        var spatB = qa(".turn-spatter-b circle");
+        var spatC = qa(".turn-spatter-c circle");
+        var dripKids = muralDrips ? Array.prototype.slice.call(muralDrips.children) : [];
+
+        /* ---------- explicit start state for everything that arrives later ---------- */
+        // handoff_in: the concrete plane continues from frame 01 UNCHANGED —
+        // full-bleed, x 0 / y 0, scale 1, opacity 1, motionless until S3.
+        gsap.set(wallStage, { x: 0, y: 0, scale: 1, opacity: 1 });
+        gsap.set(muralStage, {
+          opacity: 0,
+          scale: 0.9,
+          clipPath: "circle(4% at 50% 80%)",
+        });
+        if (muralMid) gsap.set(muralMid, { opacity: 0, y: 28 });
+        gsap.set(dripKids, { opacity: 0 });
+        gsap.set([osA, osB, osC], { opacity: 0 });
+        gsap.set(spatA.concat(spatB, spatC), { opacity: 0 });
+        gsap.set(plateBg, { scaleX: 0 });
+        gsap.set(word, { opacity: 0, scale: 1.18, filter: "blur(14px)" });
+        gsap.set(ruleStub, { scaleX: 0 });
+
+        /* ================= the particle field (canvas 2D, fully seeded) =================
+           Adapted from compositions/components/particle-image-reveal.html: one
+           per-particle attribute table built once during synchronous timeline
+           construction from a fixed LCG seed, then every painted frame is a pure
+           function of (table, timeline time). No RNG call at paint time, no wall
+           clock, no accumulated state, no rAF — any seek order lands identically.
+           Canvas raster is pinned to the 1080x1920 authored canvas (dpr-free). */
+        var CW = 1080;
+        var CH = 1920;
+        // The stroke cluster: where the three strokes cross, and the exact point
+        // the mural reveal grows out of (panel 50% 80%).
+        var CX = 540;
+        var CY = 1182;
+        var COUNT = 560;
+        var CREAM = "#f0ece5";
+        var ORANGE = "#e85d26";
+
+        // Phase A: converge on the cluster. Phase B: carry the colour outward
+        // across the mural panel and die to exactly zero.
+        var PA0 = S2;
+        var PA1 = S3;
+        var PB1 = 4.9;
+
+        var ctx = canvas.getContext("2d");
+
+        var parts = (function () {
+          var s = 0x4a5e2b13;
+          function nx() {
+            s = (Math.imul(1664525, s) + 1013904223) >>> 0;
+            return s / 4294967296;
+          }
+          var rows = [];
+          for (var i = 0; i < COUNT; i += 1) {
+            var a0 = nx() * Math.PI * 2;
+            var r0 = 560 + 760 * nx();
+            var ta = nx() * Math.PI * 2;
+            var tr = 30 + 190 * Math.sqrt(nx());
+            var a2 = nx() * Math.PI * 2;
+            var r2 = 150 + 620 * Math.sqrt(nx());
+            var t0 = 0.02 + 0.44 * nx();
+            var span = 0.3 + 0.26 * nx();
+            rows.push({
+              sx: CX + Math.cos(a0) * r0,
+              sy: CY + Math.sin(a0) * r0 * 1.15,
+              tx: CX + Math.cos(ta) * tr,
+              ty: CY + Math.sin(ta) * tr * 0.82,
+              ex: CX + Math.cos(a2) * r2,
+              ey: CY + Math.sin(a2) * r2 * 1.25,
+              t0: t0,
+              t1: Math.min(0.995, t0 + span),
+              rad: 1.4 + 3.2 * nx(),
+              dim: 0.45 + 0.55 * nx(),
+              col: nx() < 0.34 ? CREAM : ORANGE,
+            });
+          }
+          return rows;
+        })();
+
+        function clamp01(v) {
+          return v < 0 ? 0 : v > 1 ? 1 : v;
+        }
+
+        // Pure repaint: clear, then draw every particle from (row, time).
+        function paint(t) {
+          ctx.clearRect(0, 0, CW, CH);
+          if (t <= PA0 || t >= PB1) return;
+          var i;
+          var row;
+          var cur = "";
+          var x;
+          var y;
+          var r;
+          var al;
+          if (t < PA1) {
+            var p = (t - PA0) / (PA1 - PA0);
+            var gIn = clamp01(p / 0.1);
+            for (i = 0; i < parts.length; i += 1) {
+              row = parts[i];
+              var u = clamp01((p - row.t0) / (row.t1 - row.t0));
+              if (u <= 0) continue;
+              var e = 1 - Math.pow(1 - u, 3);
+              x = row.sx + (row.tx - row.sx) * e;
+              y = row.sy + (row.ty - row.sy) * e;
+              r = row.rad;
+              al = clamp01(u / 0.16) * row.dim * 0.92 * gIn;
+              if (al <= 0.003) continue;
+              if (row.col !== cur) {
+                cur = row.col;
+                ctx.fillStyle = cur;
+              }
+              ctx.globalAlpha = al;
+              ctx.beginPath();
+              ctx.arc(x, y, r, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          } else {
+            var qd = (t - PA1) / (PB1 - PA1);
+            var eq = 1 - Math.pow(1 - qd, 2.2);
+            var tail = Math.pow(1 - qd, 1.45);
+            for (i = 0; i < parts.length; i += 1) {
+              row = parts[i];
+              x = row.tx + (row.ex - row.tx) * eq;
+              y = row.ty + (row.ey - row.ty) * eq;
+              r = row.rad * (1 + 0.55 * eq);
+              al = row.dim * 0.92 * tail;
+              if (al <= 0.003) continue;
+              if (row.col !== cur) {
+                cur = row.col;
+                ctx.fillStyle = cur;
+              }
+              ctx.globalAlpha = al;
+              ctx.beginPath();
+              ctx.arc(x, y, r, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.globalAlpha = 1;
+        }
+
+        /* ============================== the one timeline ============================== */
+        var tl = gsap.timeline({
+          paused: true,
+          onUpdate: function () {
+            paint(tl.time());
+          },
+        });
+
+        // Anchor tween: spans the full authored duration so onUpdate (and the
+        // canvas repaint) fires for every eventful seek anywhere in [0, D], and
+        // the timeline never ends short of data-duration.
+        tl.to({ p: 0 }, { p: 1, duration: D, ease: "none" }, 0);
+
+        /* ---- SCENE 1 (0.00-1.40) — one fire-orange slash, landing on the bass ----
+           The wall itself does not move (handoff_in). The impact is spent in the
+           stroke and its overspray bloom instead. */
+        tl.fromTo(
+          strokeA,
+          { strokeDashoffset: lenA },
+          { strokeDashoffset: 0, duration: 0.32, ease: "power2.out" },
+          0.3,
+        );
+        tl.fromTo(
+          osA,
+          { strokeDashoffset: lenOsA },
+          { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" },
+          0.3,
+        );
+        tl.fromTo(
+          osA,
+          { opacity: 0 },
+          { opacity: 0.56, duration: 0.14, ease: "power2.out" },
+          0.3,
+        );
+        tl.fromTo(
+          osA,
+          { opacity: 0.56 },
+          { opacity: 0.26, duration: 0.46, ease: "power2.out" },
+          0.44,
+        );
+        tl.fromTo(
+          spatA,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.24, ease: "power2.out", stagger: 0.034 },
+          0.4,
+        );
+
+        /* ---- SCENE 2 (1.40-3.60) — two more strokes cross it, each on its own beat,
+           and the seeded field starts converging where the three meet ---- */
+        tl.fromTo(
+          strokeB,
+          { strokeDashoffset: lenB },
+          { strokeDashoffset: 0, duration: 0.36, ease: "power2.out" },
+          1.45,
+        );
+        tl.fromTo(
+          osB,
+          { strokeDashoffset: lenOsB },
+          { strokeDashoffset: 0, duration: 0.38, ease: "power2.out" },
+          1.45,
+        );
+        tl.fromTo(
+          osB,
+          { opacity: 0 },
+          { opacity: 0.3, duration: 0.4, ease: "power2.out" },
+          1.45,
+        );
+        tl.fromTo(
+          spatB,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.24, ease: "power2.out", stagger: 0.032 },
+          1.54,
+        );
+
+        tl.fromTo(
+          strokeC,
+          { strokeDashoffset: lenC },
+          { strokeDashoffset: 0, duration: 0.33, ease: "power2.out" },
+          2.3,
+        );
+        tl.fromTo(
+          osC,
+          { strokeDashoffset: lenOsC },
+          { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" },
+          2.3,
+        );
+        tl.fromTo(
+          osC,
+          { opacity: 0 },
+          { opacity: 0.32, duration: 0.42, ease: "power2.out" },
+          2.3,
+        );
+        tl.fromTo(
+          spatC,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.24, ease: "power2.out", stagger: 0.032 },
+          2.38,
+        );
+
+        /* ---- SCENE 3 (3.60-5.60) — THE SIGNATURE TRANSFER ----
+           One weight transfer, read as a single event: the mural grows out of the
+           stroke cluster into the upper ~70% of frame at the same moment the
+           concrete plane (the incumbent surface) yields downward and dims to 40%.
+           The particle field, already converged, carries the colour outward across
+           the panel and dies to exactly zero as the image lands beneath it. */
+        tl.fromTo(
+          muralStage,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.18, ease: "power1.out" },
+          S3,
+        );
+        tl.fromTo(
+          muralStage,
+          { clipPath: "circle(4% at 50% 80%)" },
+          { clipPath: "circle(122% at 50% 80%)", duration: 0.95, ease: "power3.out" },
+          S3,
+        );
+        tl.fromTo(
+          muralStage,
+          { scale: 0.9 },
+          { scale: 1, duration: 1.1, ease: "power3.out" },
+          S3,
+        );
+        // the incumbent surface yields into the space the hero now fills
+        tl.fromTo(
+          wallStage,
+          { y: 0, opacity: 1 },
+          { y: 124, opacity: 0.4, duration: 1.06, ease: "power3.inOut" },
+          S3 + 0.02,
+        );
+
+        // ...and the piece resolves into finished work across the rest of the window
+        if (muralMid) {
+          tl.fromTo(
+            muralMid,
+            { opacity: 0, y: 28 },
+            { opacity: 1, y: 0, duration: 0.38, ease: "power3.out" },
+            3.92,
+          );
+        }
+        if (mStroke1) {
+          tl.fromTo(
+            mStroke1,
+            { strokeDashoffset: lenM1 },
+            { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" },
+            4.26,
+          );
+        }
+        if (mStroke2) {
+          tl.fromTo(
+            mStroke2,
+            { strokeDashoffset: lenM2 },
+            { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" },
+            4.54,
+          );
+        }
+        if (dripKids.length) {
+          tl.fromTo(
+            dripKids,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.26, ease: "power2.out", stagger: 0.038 },
+            4.62,
+          );
+        }
+
+        /* ---- SCENE 4 (5.60-7.50) — the display line lands, then holds ----
+           Ink scrim snaps open around the text (scaleX 0 -> 1), the word slams in
+           on a hard power4 attack, and the fire-orange rule stub seals it a beat
+           behind so the silhouette reads first. Then stillness to the cut. */
+        tl.fromTo(
+          plateBg,
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.26, ease: "power4.out" },
+          S4 - 0.04,
+        );
+        tl.fromTo(
+          word,
+          { opacity: 0, scale: 1.18, filter: "blur(14px)" },
+          { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.44, ease: "power4.out" },
+          S4 + 0.04,
+        );
+        tl.fromTo(
+          ruleStub,
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.26, ease: "power3.out" },
+          6.18,
+        );
+
+        tl.seek(0);
+        paint(0);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["02-the-turn"] = tl;
+      })();
+    </script>
+  </div>
+</template>

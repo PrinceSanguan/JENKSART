@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Fonts — self-hosted, the same faces used in the promo video so the site and
+   the film read as one brand. No Google Fonts round-trip.
+   --------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Barlow';
+  src: url('/fonts/barlow-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow';
+  src: url('/fonts/barlow-latin-700-normal.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow';
+  src: url('/fonts/barlow-latin-900-normal.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/IBMPlexMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/IBMPlexMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------------------------------------------------
+   Tokens
+   --------------------------------------------------------------------------- */
+
+@theme {
+  --color-ink: #111111;
+  --color-ink-2: #1a1a18;
+  --color-ink-3: #232320;
+  --color-flame: #e85d26;
+  --color-flame-dim: #c44a1b;
+  --color-cream: #f0ece5;
+  --color-muted: #888880;
+
+  --font-sans: 'Barlow', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+
+html {
+  background-color: var(--color-ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-flame);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-flame);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+   Typographic utilities — the tight-display / wide-micro contrast that carries
+   the whole look. Headings go tighter, anything small goes wide and uppercase.
+   --------------------------------------------------------------------------- */
+
+.display {
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  text-transform: uppercase;
+}
+
+/* Knockout text: a solid word next to an outlined one. */
+.outline-word {
+  -webkit-text-stroke: 1.5px var(--color-cream);
+  -webkit-text-fill-color: transparent;
+  paint-order: stroke fill;
+}
+@media (min-width: 768px) {
+  .outline-word {
+    -webkit-text-stroke-width: 2px;
+  }
+}
+
+.micro {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+   --------------------------------------------------------------------------- */
+
+@keyframes kenBurnsZoomOut {
+  0% {
+    transform: scale(1.18);
+  }
+  70% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Reveal elements start hidden only once JS has taken over, so the page is
+   still fully readable if the script never runs. */
+.js-ready [data-reveal] {
+  opacity: 0;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .js-ready [data-reveal] {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,427 @@
+<template id="f01-dead-wall-template">
+  <div
+    id="root"
+    data-composition-id="01-dead-wall"
+    data-start="0"
+    data-duration="5.00"
+    data-width="1080"
+    data-height="1920"
+  >
+    <!--
+      Frame 1 — "The wall nobody looks at"   ·  1080x1920 (9:16)  ·  5.0s  ·  cold open
+      Broadside DARK register. blueprint: kinetic-type-beats (Adapt — the flat
+      fixed-centre single-beat shape and the hard-cut flash entrance are kept; the
+      blueprint's solid colour field becomes a dead concrete plane, because the
+      field itself is the subject here).
+
+      Captions are disabled on this cut, but the caption keep-out still applies:
+      nothing load-bearing below y = 1594px (bottom 326px / ~17%). Lowest content
+      here is the display block, which bottoms out at y ~= 1072px.
+
+      Scene 1  0.00–1.60s  Full-bleed dead concrete plane — ink-black-alt ground,
+                           faint mortar seams on a rule-of-thirds division, a damp
+                           stain low-left, grain running over all of it. Nothing
+                           else on screen. The wall is motionless; only the grain
+                           lives. Three depth layers: stain / mortar / grain.
+      Scene 2  1.60–3.00s  On "every street has one", the mono label hard-cut
+                           FLASHES into the upper third — EVERY STREET HAS ONE,
+                           small, dwarfed by the empty wall. No fade, no slide:
+                           the cut is the beat.
+      Scene 3  3.00–5.00s  On "the wall nobody looks at", the display line lands
+                           dead-centre in two lines — massive lowercase 900 in
+                           cream, per-word staggered reveal on power3. The mono
+                           label above holds. All motion is spent by 4.15s: the
+                           final 0.85s is deliberate DEAD STILLNESS — no jitter,
+                           no drift on the type. Only the grain field stays alive.
+                           That stillness is the payload the next cut detonates.
+
+      handoff_out — the concrete-wall plane is full-bleed at x 0 / y 0, scale 1.0,
+      opacity 1 and motionless at the cut. Frame 02 continues this exact plane, so
+      NO tween in this file addresses #f01-dead-wall-plane or any of its children:
+      the plane is pure static CSS by design. Do not animate it.
+
+      TYPE NOTE — frame.md calls for Barlow (display: lowercase, 900, negative
+      tracking) and IBM Plex Mono (chrome: uppercase, 0.14em). Both faces are now
+      staged as real .woff2 files under assets/fonts/ and declared in the
+      orchestrator-injected @font-face block at the top of <style>, so the display
+      ramp typesets in real Barlow 900 and the chrome in real IBM Plex Mono, with
+      no network fetch at render time.
+    -->
+
+    <!-- ───── track 0 · the concrete-wall plane ─────
+         The full-bleed ground rides on this class="clip" layer, never on #root.
+         Static: never addressed by the timeline (handoff_out). -->
+    <div
+      class="clip"
+      id="f01-dead-wall-plane"
+      data-start="0"
+      data-duration="5.00"
+      data-track-index="0"
+    >
+      <div class="f01-dead-wall-ground"></div>
+
+      <!-- depth layer 1 — damp staining, low-left, with the run-off below the seam -->
+      <div class="f01-dead-wall-stain">
+        <div class="f01-dead-wall-run"></div>
+      </div>
+
+      <!-- depth layer 2 — faint mortar seams on the rule-of-thirds division -->
+      <div class="f01-dead-wall-mortar">
+        <span class="f01-dead-wall-seam f01-dead-wall-seam-a"></span>
+        <span class="f01-dead-wall-lip f01-dead-wall-lip-a"></span>
+        <span class="f01-dead-wall-seam f01-dead-wall-seam-b"></span>
+        <span class="f01-dead-wall-lip f01-dead-wall-lip-b"></span>
+        <span class="f01-dead-wall-seam f01-dead-wall-seam-v"></span>
+      </div>
+    </div>
+
+    <!-- ───── track 1 · depth layer 3 — the grain field ─────
+         The installed grain-overlay component, lifted off its looping CSS keyframe
+         animation (which the frame-by-frame renderer cannot seek) onto the paused
+         root timeline as explicit stepped states. The only living thing in the
+         frame, and the only thing still moving under the dead-still tail. -->
+    <div
+      class="clip"
+      id="f01-dead-wall-grain"
+      data-start="0"
+      data-duration="5.00"
+      data-track-index="1"
+    >
+      <div class="f01-dead-wall-grain-tex"></div>
+    </div>
+
+    <!-- ───── track 2 · Scene 2 — the mono label, upper third ───── -->
+    <div
+      class="clip"
+      id="f01-dead-wall-label"
+      data-start="1.6"
+      data-duration="3.4"
+      data-track-index="2"
+    >
+      <span class="f01-dead-wall-label-text">EVERY STREET HAS ONE</span>
+    </div>
+
+    <!-- ───── track 3 · Scene 3 — the display line, dead centre ───── -->
+    <div
+      class="clip"
+      id="f01-dead-wall-display"
+      data-start="3"
+      data-duration="2"
+      data-track-index="3"
+    >
+      <div class="f01-dead-wall-lines">
+        <div class="f01-dead-wall-line">
+          <span class="f01-dead-wall-word">the</span>
+          <span class="f01-dead-wall-word">wall</span>
+        </div>
+        <div class="f01-dead-wall-line">
+          <span class="f01-dead-wall-word">nobody</span>
+          <span class="f01-dead-wall-word">looks</span>
+          <span class="f01-dead-wall-word">at</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* === hf:canonical-fonts (orchestrator-injected) === */
+      /* Staged by the orchestrator into assets/fonts/ — local files only, so the
+         render performs no network fetch and stays deterministic. font-display:block
+         keeps a fallback face from ever being captured mid-load. */
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/barlow-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 700; font-display: block;
+        src: url("assets/fonts/barlow-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 900; font-display: block;
+        src: url("assets/fonts/barlow-latin-900-normal.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Regular.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Medium.woff2") format("woff2"); }
+/* === /hf:canonical-fonts === */
+
+      
+
+      /* The frame root carries NO background: the full-bleed concrete ground rides
+         on the class="clip" plane above. The container law — container-type: size,
+         every frame-relative type/spacing value in cqw against it. */
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        container-type: size;
+        isolation: isolate;
+        color: #f0ece5;
+      }
+
+      #root *,
+      #root *::before,
+      #root *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ── the wall plane (static) ─────────────────────────────────────── */
+
+      #f01-dead-wall-plane {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      /* flat plane, flat ground — ink-black-alt, no gradient ground */
+      .f01-dead-wall-ground {
+        position: absolute;
+        inset: 0;
+        background-color: #1a1a18;
+      }
+
+      /* damp stain, low-left: ink-black washes pooled into the bottom-left corner */
+      .f01-dead-wall-stain {
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(40% 17% at 14% 80%, rgba(17, 17, 17, 0.78), rgba(17, 17, 17, 0) 74%),
+          radial-gradient(24% 10% at 25% 89%, rgba(17, 17, 17, 0.62), rgba(17, 17, 17, 0) 72%),
+          radial-gradient(30% 9% at 7% 70%, rgba(17, 17, 17, 0.5), rgba(17, 17, 17, 0) 76%);
+      }
+
+      /* the run-down off the lower mortar seam — what makes the stain read as damp */
+      .f01-dead-wall-run {
+        position: absolute;
+        left: 8.5%;
+        top: 66.7%;
+        width: 7.5%;
+        height: 24%;
+        background-image: linear-gradient(
+          180deg,
+          rgba(17, 17, 17, 0) 0%,
+          rgba(17, 17, 17, 0.42) 48%,
+          rgba(17, 17, 17, 0.58) 100%
+        );
+      }
+
+      .f01-dead-wall-mortar {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* 1px hairlines — the system's only structural ornament, here as cast joints */
+      .f01-dead-wall-seam {
+        position: absolute;
+        background-color: #282826;
+      }
+
+      .f01-dead-wall-seam-a {
+        left: 0;
+        top: 33.333%;
+        width: 100%;
+        height: 1px;
+      }
+
+      .f01-dead-wall-seam-b {
+        left: 0;
+        top: 66.667%;
+        width: 100%;
+        height: 1px;
+      }
+
+      .f01-dead-wall-seam-v {
+        left: 66.667%;
+        top: 33.333%;
+        width: 1px;
+        height: 33.334%;
+      }
+
+      /* the lip of light caught just under each joint — 1px, no shadow, no radius */
+      .f01-dead-wall-lip {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: rgba(240, 236, 229, 0.035);
+      }
+
+      .f01-dead-wall-lip-a {
+        top: calc(33.333% + 1px);
+      }
+
+      .f01-dead-wall-lip-b {
+        top: calc(66.667% + 1px);
+      }
+
+      /* ── the grain field ────────────────────────────────────────────── */
+
+      #f01-dead-wall-grain {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* Oversized 2x and offset by -50% so the stepped jitter can never expose an
+         edge. No CSS transform here on purpose — the root timeline owns
+         xPercent / yPercent on this element. grayscale() keeps the noise
+         colourless: fire-orange is the only colour in the system, and this frame
+         is deliberately drained of it. */
+      .f01-dead-wall-grain-tex {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        background-size: 256px 256px;
+        background-repeat: repeat;
+        opacity: 0.16;
+        filter: grayscale(1);
+      }
+
+      /* ── Scene 2 · the mono label ───────────────────────────────────── */
+
+      #f01-dead-wall-label {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 28%;
+        padding: 0 5.5cqw;
+        text-align: center;
+        z-index: 3;
+      }
+
+      .f01-dead-wall-label-text {
+        font-family: "IBM Plex Mono", ui-monospace, monospace;
+        font-size: 2.4cqw;
+        font-weight: 500;
+        line-height: 1.4;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #888880;
+        /* optical centring: drop the trailing tracking space */
+        margin-right: -0.14em;
+      }
+
+      /* ── Scene 3 · the display line ─────────────────────────────────── */
+
+      #f01-dead-wall-display {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5.5cqw;
+        z-index: 3;
+      }
+
+      /* Re-stepped for 9:16 from frame.md display (13cqw): measured against the
+         staged Barlow 900, "nobody looks at" is 6.53em wide, so 11.8cqw lands the
+         longest line at 77.1cqw — as massive as the 78cqw block cap allows. */
+      .f01-dead-wall-lines {
+        width: 100%;
+        max-width: 78cqw;
+        text-align: center;
+      }
+
+      .f01-dead-wall-line {
+        font-family: "Barlow", sans-serif;
+        font-size: 11.8cqw;
+        font-weight: 900;
+        line-height: 0.88;
+        letter-spacing: -0.04em;
+        text-transform: lowercase;
+        color: #f0ece5;
+        white-space: nowrap;
+      }
+
+      /* inline-block so the per-word y tween has something to transform */
+      .f01-dead-wall-word {
+        display: inline-block;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      (function () {
+        var frameRoot = document.currentScript.parentElement;
+        var q = function (sel) {
+          return frameRoot.querySelector(sel);
+        };
+
+        var tl = gsap.timeline({ paused: true });
+
+        /* ── Scene 1 · 0.00–1.60s — the dead plane; only the grain lives ──
+           The wall plane is deliberately absent from this timeline: handoff_out
+           pins it at x 0 / y 0 / scale 1 / opacity 1 and motionless, and frame 02
+           continues the same plane.
+
+           The grain-overlay component drives its texture with
+           a looping stepped CSS keyframe animation, which the
+           frame-by-frame renderer cannot seek. Its offset table is replayed here
+           as explicit stepped states on the paused root timeline — 20 steps/s,
+           fully deterministic, covering the whole 5s including the dead-still
+           tail, where this is the ONLY thing still moving. */
+        var grainTex = q(".f01-dead-wall-grain-tex");
+        var GRAIN_OFFSETS = [
+          [0, 0],
+          [-5, -5],
+          [-10, 5],
+          [5, -10],
+          [-5, 15],
+          [-10, 5],
+          [15, 0],
+          [0, 10],
+          [-15, 0],
+          [10, 5],
+        ];
+        var GRAIN_STEP = 0.05;
+        for (var i = 0; i <= 100; i++) {
+          var offset = GRAIN_OFFSETS[i % GRAIN_OFFSETS.length];
+          tl.set(grainTex, { xPercent: offset[0], yPercent: offset[1] }, i * GRAIN_STEP);
+        }
+
+        /* ── Scene 2 · 1.60s — the mono label hard-cut FLASHES in ──
+           Sub-frame duration, ease none: the label arrives whole on a single
+           frame. No fade, no slide — the cut IS the beat. It then holds, with no
+           further motion, to the end of the frame. */
+        tl.fromTo(
+          q("#f01-dead-wall-label"),
+          { opacity: 0 },
+          { opacity: 1, duration: 0.001, ease: "none" },
+          1.6,
+        );
+
+        /* ── Scene 3 · 3.05–4.15s — per-word staggered reveal on power3 ──
+           Five words land dead-centre like a stencil: a short drop into place, no
+           overshoot, no rotation, no blur. 0.17s between words reads as deliberate
+           rather than snappy, which is what "dead calm" needs. */
+        tl.fromTo(
+          frameRoot.querySelectorAll(".f01-dead-wall-word"),
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.42, ease: "power3.out", stagger: 0.17 },
+          3.05,
+        );
+
+        /* ── 4.15–5.00s — DEAD STILLNESS (intentional) ──
+           The last word settles at 4.15s and nothing is tweened after it. The type
+           does not jitter, drift, breathe or settle further; only the grain steps
+           above keep running. This ~0.85s of stillness is the payload the next cut
+           detonates — do not fill it with motion. No exit tween either: this is
+           not the final frame, and the root transition is the exit. */
+
+        window.__timelines["01-dead-wall"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </div>
+</template>

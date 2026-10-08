@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#111111"/>
+  <!-- Spray mist behind the mark, so it reads as paint rather than a letterform. -->
+  <circle cx="32" cy="30" r="21" fill="#E85D26" opacity="0.18"/>
+  <path d="M38 12v27c0 7.2-4.6 11.4-11.6 11.4-5.2 0-9.1-2.3-11.4-6.2l6.6-4.3c1.2 2 2.8 3 4.8 3 2.6 0 4.1-1.6 4.1-4.6V12z"
+        fill="#F0ECE5"/>
+  <rect x="14" y="54" width="36" height="4" fill="#E85D26"/>
+</svg>

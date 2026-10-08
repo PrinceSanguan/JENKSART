@@ -1,0 +1,38 @@
+SOURCE: research dossier only — no site or page capture (no-capture run).
+Facebook blocks automated capture; jenksart.com is 61 words with zero images.
+
+=== FACEBOOK PAGE: facebook.com/jenksart1 (verified Page, category: Artist) ===
+Name: JenksArt (Jenks)
+Followers: 17K  |  Following: 283
+Service area: Swansea, UK · Llanelli, UK  (recently painted in Bristol, UK)
+Email: jenksart3@gmail.com
+Phone: 07817 428594
+Recommendations: 96% recommend (18 reviews)
+Page tabs in use: Posts, About, Reels, Photos
+
+Page intro, verbatim:
+"Give me a shout if you need a mural or artwork on something. Prices to match budgets."
+
+Most recent post (2 days before capture):
+Mural collaboration with Eddy Dibz Fua in Bristol — a Big Pun tribute piece.
+"What a day! What a collab!! Thank you Eddy Dibz Fua for the team up on this
+one! Absolutely loved painting with you bro! First of many I hope. Our take on
+the Big Pun..."
+Comment from a follower: "Guys this is insane! what a colab top notch"
+
+=== WEBSITE: jenksart.com (Wix, live, HTTP 200) ===
+Entire homepage body, verbatim (61 words — this is the whole site):
+"JenksArt is the perfect choice for anyone seeking to add a creative touch to
+their walls. As a reknowned Welsh street artist, JenksArt specializes in local
+murals and custom designs, bringing any vision to life with passion and flair.
+contact him either by texting 07817 428594 or email jenksart3@gmail.com"
+
+Note: no gallery, no portfolio, no project pages, no before/after. /sitemap.xml
+returns 404. "reknowned" is misspelled on the live site.
+
+=== POSITIONING FACTS USABLE IN COPY ===
+- Welsh street artist / muralist, not a decorator
+- Local murals AND custom designs on "something" (not just walls)
+- Prices to match budgets — explicitly budget-flexible
+- Works domestic and has the range for commercial (shopfronts, cafes, gyms, schools)
+- Collaborates with other artists

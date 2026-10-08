@@ -1,0 +1,523 @@
+<template>
+  <style>
+      /* === hf:canonical-fonts (orchestrator-injected) === */
+      /* Staged by the orchestrator into assets/fonts/ — local files only, so the
+         render performs no network fetch and stays deterministic. font-display:block
+         keeps a fallback face from ever being captured mid-load. */
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/barlow-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 700; font-display: block;
+        src: url("assets/fonts/barlow-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Barlow"; font-style: normal; font-weight: 900; font-display: block;
+        src: url("assets/fonts/barlow-latin-900-normal.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Regular.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500; font-display: block;
+        src: url("assets/fonts/IBMPlexMono-Medium.woff2") format("woff2"); }
+/* === /hf:canonical-fonts === */
+
+      
+
+      
+
+    /* ── fonts ────────────────────────────────────────────────────────────────
+       frame.md names Barlow (display) + IBM Plex Mono (chrome). No .woff2 ships
+       with this project (assets/ holds audio only, capture/assets/ is empty), so
+       Barlow is declared with local() sources — the sanctioned no-file form of
+       
+    
+
+    /* ── root: the container law (frame.md) — container-type: size, all
+       frame-relative sizing in cqw/cqh, 1px hairlines stay 1px. No background
+       here: the full-bleed ground rides on a class="clip" layer below. ───── */
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      container-type: size;
+      overflow: hidden;
+    }
+
+    /* ── track 0 · full-bleed mural ground (clip layer, never #root) ─────── */
+    .cta07-ground {
+      position: absolute;
+      inset: 0;
+      background: #111111;
+    }
+    .cta07-mural {
+      position: absolute;
+      inset: 0;
+      /* "dim ~35%" — the designed stand-in sits at the same 35% the real mural
+         photo would, so pasting the <img> in later changes nothing else. */
+      opacity: 0.35;
+    }
+    .cta07-mural-art {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    /* wall courses — 1px hairlines, the system's structural device (frame.md),
+       not a gradient ground: they only draw hairlines over the mural field. */
+    .cta07-courses {
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+          to bottom,
+          rgba(80, 80, 72, 0) 0px,
+          rgba(80, 80, 72, 0) 85px,
+          rgba(80, 80, 72, 0.5) 85px,
+          rgba(80, 80, 72, 0.5) 86px
+        ),
+        repeating-linear-gradient(
+          to right,
+          rgba(80, 80, 72, 0) 0px,
+          rgba(80, 80, 72, 0) 171px,
+          rgba(80, 80, 72, 0.34) 171px,
+          rgba(80, 80, 72, 0.34) 172px
+        );
+    }
+
+    /* ── track 1 · ink scrim ─────────────────────────────────────────────── */
+    .cta07-scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(17, 17, 17, 0.5);
+    }
+
+    /* ── track 2 · content stage ──────────────────────────────────────────
+       One fixed-size box. BOTH swap children are position:absolute; inset:0
+       inside it with transform-origin: 50% 50% — the shared screen centre that
+       makes the condense read as one element transforming, not a swap.
+       Stage spans y 560→1240px, centre y = 900px; it never resizes. */
+    .cta07-stage {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 29.167cqh; /* 560px */
+      height: 35.417cqh; /* 680px — fits both states */
+    }
+    .cta07-swap {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+    }
+
+    /* ── the ask (outgoing) ──────────────────────────────────────────────── */
+    .cta07-ask {
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    /* rule — frame.md's 36×2px fire-orange stub, the system's only ornament */
+    .cta07-rule {
+      width: 36px;
+      height: 2px;
+      background: #e85d26;
+      margin-bottom: 2.6cqw;
+      transform-origin: 50% 50%;
+    }
+    .cta07-ask-line {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-family: "Barlow", sans-serif;
+      font-weight: 900;
+      font-size: 15cqw; /* 162px — stepped to measure; widest line ≤ 78cqw */
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      color: #f0ece5;
+      text-transform: lowercase;
+      white-space: nowrap;
+    }
+    .cta07-w {
+      display: inline-block;
+      vertical-align: top;
+      line-height: 0.92;
+    }
+
+    /* ── the lockup (incoming) — z-index ABOVE the outgoing so its fade-tail
+       cannot bleed through and double-expose the frame. ─────────────────── */
+    .cta07-lockup {
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+    }
+
+    /* The contact card is the stage's flex item, so the card's centre IS the
+       stage centre — exactly the ask's centre. One transform-origin, one event. */
+    .cta07-card {
+      position: relative;
+      box-sizing: border-box;
+      width: 78cqw; /* 842px */
+      background: #1a1a18;
+      border: 1px solid #282826;
+      padding: 4.8cqw;
+    }
+    /* fire-orange left bar */
+    .cta07-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: #e85d26;
+      transform-origin: 50% 0%;
+    }
+
+    /* wordmark — anchored to the card's top edge, so it rides the card's own
+       scale during the condense and lands in a true lockup with it. */
+    .cta07-wordmark {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 100%;
+      margin-bottom: 4.8cqw;
+      text-align: center;
+      font-family: "Barlow", sans-serif;
+      font-weight: 900;
+      font-size: 10cqw; /* 108px */
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      color: #f0ece5;
+      text-transform: lowercase;
+      opacity: 0;
+    }
+
+    /* ── contact rows — mono uppercase cream on one shared left grid ─────── */
+    /* No extra left padding: the card's own padding edge IS the shared grid,
+       which keeps the longest row (FACEBOOK.COM/JENKSART1) comfortably inside
+       the measure even if the mono falls back to a wider face. */
+    .cta07-row {
+      display: flex;
+      align-items: center;
+      height: 8.889cqw; /* 96px */
+    }
+    .cta07-tick {
+      flex: 0 0 auto;
+      display: block;
+      width: 2.6cqw;
+      height: 2.6cqw;
+      margin-right: 2cqw;
+      overflow: visible;
+    }
+    .cta07-tick-path {
+      fill: none;
+      stroke: #e85d26;
+      stroke-width: 3;
+      stroke-linecap: butt;
+      stroke-linejoin: miter;
+    }
+    .cta07-row-text {
+      font-family: "IBM Plex Mono", "JetBrains Mono", monospace;
+      font-weight: 500;
+      font-size: 3.55cqw; /* 38px — well above the 1.4cqw floor; sized so the
+                             longest row clears the card measure on any mono */
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #f0ece5;
+      white-space: nowrap;
+      opacity: 0;
+    }
+    .cta07-div {
+      height: 1px;
+      background: #282826;
+      transform-origin: 0% 50%;
+    }
+
+    /* ── track 3 · grain field (static — an infinite CSS animation is not
+       seek-safe, so the installed grain-overlay's texture is reused without
+       its keyframe loop). ──────────────────────────────────────────────── */
+    .cta07-grain {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .cta07-grain-texture {
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.1;
+    }
+
+    /* ── track 4 · the film's only real exit ─────────────────────────────── */
+    .cta07-exit {
+      position: absolute;
+      inset: 0;
+      background: #111111;
+      opacity: 0;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="07-cta"
+    data-start="0"
+    data-duration="8.63"
+    data-width="1080"
+    data-height="1920"
+  >
+    <!-- ══ track 0 · full-bleed mural ground ═══════════════════════════════ -->
+    <div
+      id="cta07-ground"
+      class="clip cta07-ground"
+      style="z-index: 1"
+      data-start="0"
+      data-duration="8.63"
+      data-track-index="0"
+    >
+      <!--
+        ███ MURAL PHOTO SLOT ███
+        assets/murals/mural-02.jpg is intentionally absent from disk, so this
+        frame ships a designed abstract mural stand-in (the .cta07-mural-art
+        SVG below) at the same ~35% dim under the same ink scrim.
+
+        When the photo lands, paste this markup as the FIRST child of
+        .cta07-mural (immediately below this comment) and delete the
+        .cta07-mural-art stand-in. Nothing else changes — the opacity, the
+        scrim and the grain already sit at the right strengths.
+
+        <img
+          class="cta07-mural-photo"
+          src="assets/murals/mural-02.jpg"
+          alt=""
+          style="position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover;"
+        />
+      -->
+      <div class="cta07-mural">
+        <img
+          class="cta07-mural-photo"
+          src="assets/murals/mural-02.jpg"
+          alt=""
+          style="position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover;"
+        />
+        <div class="cta07-courses"></div>
+      </div>
+    </div>
+
+    <!-- ══ track 1 · ink scrim ═════════════════════════════════════════════ -->
+    <div
+      id="cta07-scrim"
+      class="clip cta07-scrim"
+      style="z-index: 2"
+      data-start="0"
+      data-duration="8.63"
+      data-track-index="1"
+    ></div>
+
+    <!-- ══ track 2 · the stage: ask and lockup share one centre ═══════════ -->
+    <div
+      id="cta07-stage"
+      class="clip cta07-stage"
+      style="z-index: 3"
+      data-start="0"
+      data-duration="8.63"
+      data-track-index="2"
+    >
+      <!-- outgoing: the display question -->
+      <div id="cta07-ask" class="cta07-swap cta07-ask">
+        <div id="cta07-rule" class="cta07-rule"></div>
+        <div class="cta07-ask-line">
+          <span class="cta07-w">got</span> <span class="cta07-w">a</span>
+          <span class="cta07-w">wall</span>
+        </div>
+        <div class="cta07-ask-line"><span class="cta07-w">that</span></div>
+        <div class="cta07-ask-line"><span class="cta07-w">deserves</span></div>
+        <div class="cta07-ask-line"><span class="cta07-w">better?</span></div>
+      </div>
+
+      <!-- incoming: the contact lockup -->
+      <div id="cta07-lockup" class="cta07-swap cta07-lockup">
+        <div id="cta07-card" class="cta07-card">
+          <div id="cta07-wordmark" class="cta07-wordmark">jenksart</div>
+          <div id="cta07-bar" class="cta07-bar"></div>
+
+          <div class="cta07-row">
+            <svg class="cta07-tick" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+              <path id="cta07-tick-1" class="cta07-tick-path" d="M 2 14 L 10 22 L 26 4"></path>
+            </svg>
+            <div id="cta07-text-1" class="cta07-row-text">JENKSART3@GMAIL.COM</div>
+          </div>
+
+          <div id="cta07-div-1" class="cta07-div"></div>
+
+          <div class="cta07-row">
+            <svg class="cta07-tick" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+              <path id="cta07-tick-2" class="cta07-tick-path" d="M 2 14 L 10 22 L 26 4"></path>
+            </svg>
+            <div id="cta07-text-2" class="cta07-row-text">07817 428594</div>
+          </div>
+
+          <div id="cta07-div-2" class="cta07-div"></div>
+
+          <div class="cta07-row">
+            <svg class="cta07-tick" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+              <path id="cta07-tick-3" class="cta07-tick-path" d="M 2 14 L 10 22 L 26 4"></path>
+            </svg>
+            <div id="cta07-text-3" class="cta07-row-text">FACEBOOK.COM/JENKSART1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ track 3 · grain field ═══════════════════════════════════════════ -->
+    <div
+      id="cta07-grain"
+      class="clip cta07-grain"
+      style="z-index: 4"
+      data-start="0"
+      data-duration="8.63"
+      data-track-index="3"
+    >
+      <div class="cta07-grain-texture"></div>
+    </div>
+
+    <!-- ══ track 4 · the film's only real exit ════════════════════════════ -->
+    <div
+      id="cta07-exit"
+      class="clip cta07-exit"
+      style="z-index: 5"
+      data-start="0"
+      data-duration="8.63"
+      data-track-index="4"
+    ></div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* Seek-safe start states for everything that arrives later. */
+      tl.set("#cta07-lockup", { opacity: 0, scale: 0.72 }, 0);
+      tl.set("#cta07-bar", { scaleY: 0 }, 0);
+      tl.set(["#cta07-div-1", "#cta07-div-2"], { scaleX: 0 }, 0);
+      tl.set(["#cta07-text-1", "#cta07-text-2", "#cta07-text-3"], { opacity: 0 }, 0);
+      tl.set("#cta07-wordmark", { opacity: 0 }, 0);
+
+      /* ── Scene 1 (0.0–2.2s) · the question lands ──────────────────────────
+         Mural ground, ink scrim and grain are painted from frame 0 and stay
+         static (camera-static, per the blueprint). The fire-orange rule stub
+         draws from its centre, then the six words land on a per-word stagger
+         so the hero is on screen well inside 0.5s; the block then dwells for
+         the rest of the window — the outgoing must LAND before it transforms. */
+      tl.fromTo(
+        "#cta07-rule",
+        { opacity: 0, scaleX: 0 },
+        { opacity: 1, scaleX: 1, duration: 0.34, ease: "power3.out" },
+        0.08,
+      );
+
+      var WORDS = gsap.utils.toArray(".cta07-w");
+      WORDS.forEach(function (w, i) {
+        tl.fromTo(
+          w,
+          { opacity: 0, y: 34 },
+          { opacity: 1, y: 0, duration: 0.44, ease: "power3.out" },
+          0.14 + i * 0.11,
+        );
+      });
+
+      /* ── Scene 2 (2.2–3.6s) · THE CONDENSE (signature move) ───────────────
+         scale-swap-transition, run as the blueprint's shared-transform-origin
+         condense. Both swap children are inset:0 in the one fixed-size stage
+         with transform-origin 50% 50%, and the card is the stage's centred
+         flex item — so the question shrink-fades at exactly the screen centre
+         the contact card scales up into: one element transforming, not two
+         elements swapping.
+         TRIGGER 2.20 · EXIT_DUR 0.40 (power2.in) · OVERLAP 0.16 ·
+         EXIT_SCALE 0.72 · ENTER_DUR 0.58 (back.out — incoming only).
+         The blueprint's literal button press is dropped: this film has no
+         cursor anywhere, and introducing one here would break its grammar. */
+      tl.fromTo(
+        "#cta07-ask",
+        { scale: 1, opacity: 1 },
+        { scale: 0.72, opacity: 0, duration: 0.4, ease: "power2.in" },
+        2.2,
+      );
+      tl.fromTo(
+        "#cta07-lockup",
+        { scale: 0.72, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.58, ease: "back.out(1.5)" },
+        2.44,
+      );
+      /* the fire-orange accent strikes down the card's left edge once the
+         panel has settled — it carries the beat into Scene 3 */
+      tl.fromTo("#cta07-bar", { scaleY: 0 }, { scaleY: 1, duration: 0.42, ease: "power3.out" }, 3.05);
+
+      /* ── Scene 3 (3.6–5.0s) · three routes fill the card, one per beat ────
+         Each row slides onto the shared left grid, its hairline divider draws
+         from the left, and a fire-orange tick DRAWS beside it (svg-path-draw:
+         stroke-dasharray = measured getTotalLength(), dashoffset len → 0). */
+      var TICKS = gsap.utils.toArray(".cta07-tick-path");
+      var TICK_LEN = TICKS.map(function (p) {
+        var len = 36;
+        try {
+          var measured = p.getTotalLength();
+          if (measured > 0) len = measured;
+        } catch (e) {
+          /* geometry unavailable — fall back to the authored path length */
+        }
+        p.style.strokeDasharray = String(len);
+        tl.set(p, { strokeDashoffset: len }, 0);
+        return len;
+      });
+
+      var ROW_AT = [3.6, 4.04, 4.48];
+      ROW_AT.forEach(function (at, i) {
+        if (i > 0) {
+          tl.fromTo(
+            "#cta07-div-" + i,
+            { scaleX: 0 },
+            { scaleX: 1, duration: 0.38, ease: "power2.out" },
+            at - 0.06,
+          );
+        }
+        tl.fromTo(
+          "#cta07-text-" + (i + 1),
+          { opacity: 0, x: -26 },
+          { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" },
+          at,
+        );
+        tl.fromTo(
+          TICKS[i],
+          { strokeDashoffset: TICK_LEN[i] },
+          { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" },
+          at + 0.06,
+        );
+      });
+
+      /* ── Scene 4 (5.0–8.63s) · the mark locks up, then DEAD still ──────────
+         The wordmark drops into place above the card by 5.50s (the poster
+         frame), the whole lockup then holds absolutely still for ~2.7s so the
+         details can be read and acted on, and the film takes its ONLY real
+         exit: a slow 0.4s fade to ink-black on the last beat.
+
+         The exit is anchored to the END of the frame, not to a fixed 7.1s:
+         the frame was re-cut to 8.63s for the delivered voiceover, and a
+         fade left at 7.1s blacked the screen out 1.1s before the last word. */
+      tl.fromTo(
+        "#cta07-wordmark",
+        { opacity: 0, y: 26 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+        5.0,
+      );
+      tl.fromTo(
+        "#cta07-exit",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.4, ease: "power2.inOut" },
+        8.23,
+      );
+
+      window.__timelines["07-cta"] = tl;
+      tl.seek(0);
+    })();
+  </script>
+</template>

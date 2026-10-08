@@ -1,0 +1,60 @@
+{
+  "bgm": {
+    "path": "assets/bgm-45s.mp3",
+    "volume": 0.25,
+    "source": "host",
+    "duration_s": 45.02,
+    "note": "House track, cut 60.0-105.0s from assets/bgm.mp3 (the 10s opening is a quiet build and there is a breakdown at ~50s; 60s is the strongest clean entrance with no dip through 105s). Fade-in 0.6s, fade-out 2.5s from 42.5s, then EBU R128 loudness-normalised to I=-16 LUFS / TP=-1.5 dBTP. Ducked to 0.25 (-12 dB) now that the voiceover is in, putting the bed at roughly -28 LUFS under a -16.3 LUFS voice."
+  },
+  "bgm_pending": false,
+  "voices": [
+    {
+      "path": "assets/voice.mp3",
+      "volume": 1,
+      "source": "host",
+      "duration_s": 45,
+      "provider": "elevenlabs",
+      "model": "v4",
+      "voice": "Hope - upbeat and clear",
+      "note": "User-rendered take (41.17s) split at its own pause boundaries into the script's 7 lines and re-placed onto this cut's frame starts; see STORYBOARD.md § Voiceover. Compressed then lifted to -16.3 LUFS / -1.7 dBTP."
+    }
+  ],
+  "sfx": [
+    {
+      "frame": 2,
+      "file": "assets/sfx/impact-bass-1.mp3",
+      "offset_s": 0,
+      "duration_s": 2.12,
+      "volume": 0.26,
+      "source": "host",
+      "frame_start_s": 4.12
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.22,
+      "source": "host",
+      "frame_start_s": 10.67
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/impact-bass-2.mp3",
+      "offset_s": 0,
+      "duration_s": 2.59,
+      "volume": 0.26,
+      "source": "host",
+      "frame_start_s": 25.64
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.2,
+      "source": "host",
+      "frame_start_s": 36.37
+    }
+  ]
+}
